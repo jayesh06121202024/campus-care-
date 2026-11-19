@@ -109,7 +109,7 @@ function authView(mode="login"){$("#chat")?.remove();
   <label>Email</label><input name="email" type="email" required><label>Password</label><input name="password" type="password" required minlength="6">
   <div class="err" id="err"></div><button class="btn">${reg?"Create account":"Sign in"}</button></form>
   <p class="mute" style="margin-top:1rem">${reg?'Have an account? <a href="#" onclick="authView();return false">Sign in</a>':'New student? <a href="#" onclick="authView(\'register\');return false">Create an account</a>'}</p>
-  ${reg?"":'<p class="mute">Demo: student@campus.local / student123 &middot; staff@campus.local / staff123 &middot; admin@campus.local / admin123</p>'}</div>`}
+  ${reg||!meta.demo?"":'<p class="mute">Demo: student@campus.local / student123 &middot; staff@campus.local / staff123 &middot; admin@campus.local / admin123</p>'}</div>`}
 async function doAuth(e,reg){e.preventDefault();const b=Object.fromEntries(new FormData(e.target));
   try{me=(await api(reg?"/register":"/login","POST",b)).user;if(isStaff())staff=await api("/staff");location.hash="#/";route()}catch(x){$("#err").textContent=x.message}return false}
 

@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Campus Care - student services & complaint management. Zero dependencies (Python 3.8+).
 Run:  python server.py   ->  http://localhost:8000"""
-import sqlite3, json, hashlib, secrets, os, re, csv, io, threading
+import sqlite3, json, hashlib, secrets, os, re, csv, io, threading, time
 import chatbot
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DB = os.path.join(HERE, "campuscare.db")
+DB = os.environ.get("DB_PATH") or os.path.join(HERE, "campuscare.db")
 PORT = int(os.environ.get("PORT", 8000))
+HOST = os.environ.get("HOST") or ("0.0.0.0" if os.environ.get("PORT") else "127.0.0.1")  # Render sets PORT
+PROD = bool(os.environ.get("ADMIN_PASSWORD"))  # production: no demo accounts, admin comes from environment
 META = {
     "categories": ["Hostel", "Academics", "Library", "Canteen", "Transport", "IT / Wi-Fi", "Fees & Admin", "Health", "Harassment", "Other"],
     "statuses": ["Open", "In Progress", "Resolved", "Closed"],
@@ -16,6 +18,8 @@ META = {
     "kinds": ["Complaint", "Service Request"],
 }
 SESS = {}
+FAILS = {}
+META["demo"] = not PROD
 ESC = "(t.status IN ('Open','In Progress') AND ((t.priority='Urgent' AND julianday('now')-julianday(t.created)>1) OR (t.priority='High' AND julianday('now')-julianday(t.created)>3)))"
 
 
@@ -58,6 +62,7 @@ def check(pw, stored):
 
 
 def init():
+    os.makedirs(os.path.dirname(os.path.abspath(DB)), exist_ok=True)
     c = sqlite3.connect(DB)
     c.executescript("""
     CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, pw TEXT, role TEXT DEFAULT 'student', roll TEXT, created TEXT DEFAULT CURRENT_TIMESTAMP);
@@ -74,9 +79,9 @@ def init():
         except sqlite3.OperationalError:
             pass
     if not c.execute("SELECT 1 FROM users").fetchone():
-        for n, e, p, r, roll in [("Administrator", "admin@campus.local", "admin123", "admin", ""),
+        for n, e, p, r, roll in ([("Administrator", os.environ.get("ADMIN_EMAIL", "admin@example.com").strip().lower(), os.environ["ADMIN_PASSWORD"], "admin", "")] if PROD else [("Administrator", "admin@campus.local", "admin123", "admin", ""),
                                  ("Support Staff", "staff@campus.local", "staff123", "staff", ""),
-                                 ("Demo Student", "student@campus.local", "student123", "student", "STU-1001")]:
+                                 ("Demo Student", "student@campus.local", "student123", "student", "STU-1001")]):
             c.execute("INSERT INTO users(name,email,pw,role,roll) VALUES(?,?,?,?,?)", (n, e, hp(p), r, roll))
     c.commit()
     c.close()
@@ -108,12 +113,18 @@ def route(h, m, p, qs, b):
     if p == "/meta":
         return META
     if p == "/login" and m == "POST":
+        k = (h.headers.get("X-Forwarded-For") or h.client_address[0]).split(",")[0].strip() + "|" + b.get("email", "").strip().lower()
+        now = time.time()
+        FAILS[k] = [x for x in FAILS.get(k, []) if now - x < 600]
+        if len(FAILS[k]) >= 5:
+            raise E(429, "Too many failed attempts. Try again in 10 minutes.")
         r = q("SELECT * FROM users WHERE email=?", (b.get("email", "").strip().lower(),), one=True)
         if not r or not check(b.get("password", ""), r["pw"]):
+            FAILS[k].append(now)
             raise E(401, "Wrong email or password")
         t = secrets.token_hex(16)
         SESS[t] = r["id"]
-        return {"user": pub(r)}, {"Set-Cookie": f"sid={t}; HttpOnly; Path=/; SameSite=Lax"}
+        return {"user": pub(r)}, {"Set-Cookie": f"sid={t}; HttpOnly; Path=/; SameSite=Lax" + ("; Secure" if h.headers.get("X-Forwarded-Proto") == "https" else "")}
     if p == "/register" and m == "POST":
         name, email, pw = b.get("name", "").strip(), b.get("email", "").strip().lower(), b.get("password", "")
         if not name or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
@@ -125,7 +136,7 @@ def route(h, m, p, qs, b):
         uid = q("INSERT INTO users(name,email,pw,role,roll) VALUES(?,?,?,'student',?)", (name, email, hp(pw), b.get("roll", "").strip()), w=True)
         t = secrets.token_hex(16)
         SESS[t] = uid
-        return {"user": pub(q("SELECT * FROM users WHERE id=?", (uid,), one=True))}, {"Set-Cookie": f"sid={t}; HttpOnly; Path=/; SameSite=Lax"}
+        return {"user": pub(q("SELECT * FROM users WHERE id=?", (uid,), one=True))}, {"Set-Cookie": f"sid={t}; HttpOnly; Path=/; SameSite=Lax" + ("; Secure" if h.headers.get("X-Forwarded-Proto") == "https" else "")}
     if p == "/logout":
         SESS.pop(h.sid(), None)
         return {"ok": True}, {"Set-Cookie": "sid=; Path=/; Max-Age=0"}
@@ -329,8 +340,11 @@ class H(BaseHTTPRequestHandler):
                 return self.out(200, f.read(), "text/html; charset=utf-8")
         b = {}
         if m == "POST":
+            ln = int(self.headers.get("Content-Length") or 0)
+            if ln > 3_000_000:
+                return self.out(413, {"error": "Request too large"})
             try:
-                b = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
+                b = json.loads(self.rfile.read(ln) or b"{}")
             except ValueError:
                 return self.out(400, {"error": "Bad request"})
         try:
@@ -340,7 +354,8 @@ class H(BaseHTTPRequestHandler):
         except E as e:
             self.out(e.code, {"error": e.msg})
         except Exception as e:
-            self.out(500, {"error": "Server error: " + str(e)})
+            import traceback; traceback.print_exc()
+            self.out(500, {"error": "Something went wrong on the server"})
 
     def do_GET(self):
         self.handle_any("GET")
@@ -351,5 +366,7 @@ class H(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     init()
-    print(f"Campus Care running at http://localhost:{PORT}  (Ctrl+C to stop)")
-    ThreadingHTTPServer(("127.0.0.1", PORT), H).serve_forever()
+    if os.environ.get("AUTO_CRAWL", "1" if PROD else "0") == "1" and not chatbot.status(DB)["chunks"]:
+        threading.Thread(target=chatbot.crawl, args=(DB,), daemon=True).start()
+    print(f"Campus Care running on {HOST}:{PORT}  (Ctrl+C to stop)")
+    ThreadingHTTPServer((HOST, PORT), H).serve_forever()

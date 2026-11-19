@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: campus-care
+    runtime: python
+    plan: starter            # a paid plan is required for a persistent disk
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    healthCheckPath: /api/meta
+    envVars:
+      - key: DB_PATH
+        value: /var/data/campuscare.db
+      - key: ADMIN_EMAIL
+        sync: false          # Render asks you for this when you create the Blueprint
+      - key: ADMIN_PASSWORD
+        sync: false          # choose a strong password
+    disk:
+      name: campus-care-data
+      mountPath: /var/data
+      sizeGB: 1
