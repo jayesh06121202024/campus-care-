@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Campus Care</title>
+<style>
+:root{--ink:#16213e;--bg:#eef2f6;--card:#fff;--line:#d5dde6;--mute:#5b6b7e;--acc:#0f766e;--acc2:#0b5d56;--warn:#b45309;--bad:#b42318;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--ink:#e8edf5;--bg:#0f1624;--card:#17202f;--line:#2a374b;--mute:#9aa8bb;--acc:#2dd4bf;--acc2:#5eead4;--warn:#fbbf24;--bad:#f87171;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:Charter,Georgia,serif;margin:0 0 .5rem;line-height:1.2}
+h1{font-size:1.7rem}h2{font-size:1.25rem}h3{font-size:1.05rem}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+header{background:var(--ink);color:var(--bg);display:flex;align-items:center;gap:1.2rem;padding:.7rem 1.2rem;flex-wrap:wrap}
+@media(prefers-color-scheme:dark){header{background:#0a101b;color:#e8edf5;border-bottom:1px solid var(--line)}}
+header b{font:700 1.2rem Charter,Georgia,serif;margin-right:.6rem}
+header nav{display:flex;gap:.3rem;flex:1;flex-wrap:wrap}
+header nav a,header button{color:inherit;padding:.35rem .7rem;border-radius:6px;background:none;border:0;font:inherit;cursor:pointer}
+header nav a.on,header nav a:hover,header button:hover{background:rgba(255,255,255,.14);text-decoration:none}
+main{max-width:1050px;margin:1.4rem auto;padding:0 1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.1rem;margin-bottom:1rem}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:1rem}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem}
+.stat .n{font:700 1.9rem Charter,Georgia,serif}.stat .l{color:var(--mute);font-size:.85rem}
+label{display:block;font-weight:600;font-size:.88rem;margin:.7rem 0 .25rem}
+input,select,textarea{width:100%;padding:.55rem .65rem;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:.8rem;flex-wrap:wrap}.row>*{flex:1;min-width:150px}
+.btn{background:var(--acc);color:#fff;border:0;padding:.55rem 1.1rem;border-radius:7px;font:600 .95rem inherit;cursor:pointer;margin-top:.9rem;width:auto}
+@media(prefers-color-scheme:dark){.btn{color:#04201d}}
+.btn:hover{background:var(--acc2)}.btn.ghost{background:none;color:var(--acc);border:1px solid var(--acc)}
+.chk{display:flex;align-items:center;gap:.5rem;font-weight:400;margin-top:.8rem}.chk input{width:auto}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.82rem;color:var(--mute);font-weight:600}tr.link{cursor:pointer}tr.link:hover{background:var(--bg)}
+.wrap{overflow-x:auto}
+.b{display:inline-block;padding:.1rem .55rem;border-radius:99px;font-size:.78rem;font-weight:600;border:1px solid currentColor;white-space:nowrap}
+.s-Open{color:var(--warn)}.s-In\ Progress{color:#2563eb}.s-Resolved{color:var(--acc)}.s-Closed{color:var(--mute)}
+.p-Urgent{color:var(--bad)}.p-High{color:var(--warn)}.p-Medium{color:var(--mute)}.p-Low{color:var(--mute);opacity:.8}
+.mute{color:var(--mute);font-size:.88rem}.err{color:var(--bad);margin-top:.6rem;min-height:1.2em}
+.bar{display:flex;align-items:center;gap:.6rem;margin:.35rem 0}.bar i{display:block;height:10px;background:var(--acc);border-radius:5px}.bar span:first-child{width:105px;font-size:.88rem}
+.msg{border-left:3px solid var(--line);padding:.3rem .8rem;margin:.7rem 0}.msg.staff{border-color:var(--acc)}.msg.int{border-color:var(--warn);background:var(--bg)}
+.auth{max-width:400px;margin:3rem auto}.stars button{background:none;border:0;font-size:1.6rem;cursor:pointer;color:var(--line);padding:0 .1rem}.stars button.on{color:#f59e0b}
+.empty{text-align:center;padding:2rem;color:var(--mute)}
+@media(prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
+
+/* vibrant theme */
+:root{--ink:#1e1b4b;--bg:#f1eeff;--card:#fff;--line:#ddd6fe;--mute:#5f5a8a;--acc:#7c3aed;--acc2:#6d28d9;--warn:#c2410c;--bad:#e11d48}
+@media(prefers-color-scheme:dark){:root{--ink:#ede9fe;--bg:#110f2a;--card:#1c1942;--line:#3a3475;--mute:#a9a3d6;--acc:#a78bfa;--acc2:#c4b5fd;--warn:#fb923c;--bad:#fb7185}}
+body{background:radial-gradient(900px 420px at 8% -5%,rgba(236,72,153,.16),transparent),radial-gradient(900px 480px at 100% 0,rgba(99,102,241,.2),transparent),var(--bg);background-attachment:fixed}
+header{background:linear-gradient(110deg,#4338ca,#7c3aed 55%,#db2777);color:#fff;border:0;box-shadow:0 4px 18px rgba(79,70,229,.35)}
+header b{letter-spacing:.3px}
+header nav a.on{background:rgba(255,255,255,.24)}
+.card,.stat{box-shadow:0 2px 10px rgba(99,60,200,.1);border-radius:14px}
+.card:hover{border-color:var(--acc)}
+.stat{border-top:4px solid var(--acc)}
+.grid .stat:nth-child(6n+2){border-top-color:#ec4899}.grid .stat:nth-child(6n+3){border-top-color:#f59e0b}
+.grid .stat:nth-child(6n+4){border-top-color:#ef4444}.grid .stat:nth-child(6n+5){border-top-color:#14b8a6}.grid .stat:nth-child(6n+6){border-top-color:#0ea5e9}
+.stat .n{background:linear-gradient(90deg,#6366f1,#d946ef);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .n[style]{background:none;color:var(--bad)}
+.btn{background:linear-gradient(110deg,#6d28d9,#c026d3);color:#fff;border-radius:10px;box-shadow:0 3px 10px rgba(124,58,237,.35);transition:transform .12s}
+.btn:hover{background:linear-gradient(110deg,#5b21b6,#a21caf);transform:translateY(-1px)}
+.btn.ghost{background:none;color:var(--acc);box-shadow:none;border:1px solid var(--acc)}
+.b{background:color-mix(in srgb,currentColor 14%,transparent);border-color:transparent}
+.s-Open{color:#d97706}.s-In\ Progress{color:#2563eb}.s-Resolved{color:#059669}.p-Medium{color:#7c3aed}
+@media(prefers-color-scheme:dark){.s-Open{color:#fbbf24}.s-In\ Progress{color:#60a5fa}.s-Resolved{color:#34d399}.p-Medium{color:#c4b5fd}}
+th{color:var(--acc);text-transform:uppercase;letter-spacing:.5px;font-size:.74rem}
+tr.link:hover{background:color-mix(in srgb,var(--acc) 9%,transparent)}
+.bar i{background:linear-gradient(90deg,#6366f1,#ec4899);height:12px}
+.msg{border-left-width:4px;border-radius:0 8px 8px 0}.msg.staff{border-color:#7c3aed;background:color-mix(in srgb,#7c3aed 7%,transparent)}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);outline:2px solid color-mix(in srgb,var(--acc) 35%,transparent)}
+.auth h1{background:linear-gradient(90deg,#6366f1,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2.1rem}
+.auth{border-top:5px solid #d946ef}
+.stars button.on{color:#f59e0b}
+#chat{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;text-align:right}
+#cb{background:linear-gradient(110deg,#6d28d9,#c026d3);color:#fff;border:0;border-radius:99px;padding:.7rem 1.1rem;font:600 .95rem inherit;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.45)}
+#cp{width:350px;max-width:calc(100vw - 32px);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.28);margin-bottom:10px;overflow:hidden;text-align:left}
+#cp[hidden]{display:none}.ch{display:flex;gap:.5rem;align-items:center;padding:.6rem .8rem;background:linear-gradient(110deg,#4338ca,#c026d3);color:#fff}
+.ch button{margin-left:auto;background:none;border:0;color:#fff;font-size:1rem;cursor:pointer}.ch .mute{color:#fff;opacity:.85;font-size:.75rem}
+#cm{height:300px;overflow-y:auto;padding:.6rem}.cmsg{padding:.5rem .7rem;border-radius:12px;margin:.4rem 0;max-width:92%;font-size:.9rem}
+.cmsg.bot{background:color-mix(in srgb,var(--acc) 10%,var(--card));border:1px solid var(--line)}.cmsg.me{background:var(--acc);color:#fff;margin-left:auto}
+#cp form{display:flex;gap:.4rem;padding:.6rem;border-top:1px solid var(--line)}#cp form input{flex:1}
+</style></head><body>
+<div id="app"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=d=>(d||"").slice(0,16).replace("T"," ");
+async function api(p,m="GET",b){const r=await fetch("/api"+p,{method:m,headers:{"Content-Type":"application/json"},body:b?JSON.stringify(b):undefined});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Something went wrong");return d}
+const badge=(c,v)=>`<span class="b ${c}-${esc(v)}">${esc(v)}</span>`;
+let me=null,meta=null,staff=[];
+const isStaff=()=>me&&me.role!=="student";
+const opts=(a,sel,all)=>(all?`<option value="">${all}</option>`:"")+a.map(x=>`<option ${x===sel?"selected":""}>${esc(x)}</option>`).join("");
+
+async function boot(){meta=await api("/meta");me=(await api("/me")).user;if(me&&isStaff())staff=await api("/staff");route()}
+function shell(html){
+  $("#app").innerHTML=`<header><b>Campus Care</b><nav>
+  <a href="#/" data-r="/">Home</a><a href="#/tickets" data-r="/tickets">${isStaff()?"All tickets":"My tickets"}</a>
+  ${me.role==="student"?'<a href="#/new" data-r="/new">New ticket</a>':""}${isStaff()?'<a href="#/analytics" data-r="/analytics">Analytics</a>':""}${me.role==="admin"?'<a href="#/users" data-r="/users">Users</a>':""}<a href="#/notifications" data-r="/notifications">Notifications <b id="nb"></b></a></nav>
+  <a href="#/profile" style="color:inherit;opacity:.9">${esc(me.name)} (${me.role})</a><button onclick="logout()">Sign out</button></header><main>${html}</main>`;badge2();ensureChat();
+  const h=location.hash.slice(1)||"/";document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.r===h||(a.dataset.r!=="/"&&h.startsWith(a.dataset.r))))}
+async function badge2(){try{const n=(await api("/notifications")).unread;const e=$("#nb");if(e)e.textContent=n?`(${n})`:""}catch(e){}}
+async function logout(){await api("/logout","POST");me=null;route()}
+
+function authView(mode="login"){$("#chat")?.remove();
+  const reg=mode==="register";
+  $("#app").innerHTML=`<div class="auth card"><h1>Campus Care</h1><p class="mute">${reg?"Create a student account to raise complaints and service requests.":"Sign in to track your complaints and requests."}</p>
+  <form onsubmit="return doAuth(event,${reg})">
+  ${reg?'<label>Full name</label><input name="name" required><label>Roll / ID number</label><input name="roll">':""}
+  <label>Email</label><input name="email" type="email" required><label>Password</label><input name="password" type="password" required minlength="6">
+  <div class="err" id="err"></div><button class="btn">${reg?"Create account":"Sign in"}</button></form>
+  <p class="mute" style="margin-top:1rem">${reg?'Have an account? <a href="#" onclick="authView();return false">Sign in</a>':'New student? <a href="#" onclick="authView(\'register\');return false">Create an account</a>'}</p>
+  ${reg?"":'<p class="mute">Demo: student@campus.local / student123 &middot; staff@campus.local / staff123 &middot; admin@campus.local / admin123</p>'}</div>`}
+async function doAuth(e,reg){e.preventDefault();const b=Object.fromEntries(new FormData(e.target));
+  try{me=(await api(reg?"/register":"/login","POST",b)).user;if(isStaff())staff=await api("/staff");location.hash="#/";route()}catch(x){$("#err").textContent=x.message}return false}
+
+async function route(){
+  if(!me)return authView();
+  const h=location.hash.slice(1)||"/";
+  try{
+    if(h==="/")await home();else if(h==="/tickets")await list();else if(h==="/new")newTicket();
+    else if(h==="/users"&&me.role==="admin")await users();else if(h==="/notifications")await notifs();else if(h==="/profile")profile();else if(h==="/analytics"&&isStaff())await analytics();else if(/^\/t\/\d+$/.test(h))await detail(h.split("/")[2]);else await home()
+  }catch(x){shell(`<div class="card"><h2>Couldn't load this page</h2><p class="err">${esc(x.message)}</p></div>`)}}
+addEventListener("hashchange",route);
+
+function ticketTable(rows){
+  if(!rows.length)return `<div class="empty">No tickets here yet.</div>`;
+  return `<div class="wrap"><table><tr><th>#</th><th>Title</th><th>Category</th><th>Priority</th><th>Status</th>${isStaff()?"<th>Raised by</th><th>Assigned</th>":""}<th>Updated</th></tr>
+  ${rows.map(t=>`<tr class="link" onclick="location.hash='#/t/${t.id}'"><td>${t.id}</td><td><b>${esc(t.title)}</b>${t.esc?' <span class="b p-Urgent">Escalated</span>':""}${t.image?' <span class="mute">(photo)</span>':""}<div class="mute">${esc(t.kind)}</div></td><td>${esc(t.category)}</td><td>${badge("p",t.priority)}</td><td>${badge("s",t.status)}</td>
+  ${isStaff()?`<td>${esc(t.owner)}</td><td>${esc(t.assignee||"—")}</td>`:""}<td class="mute">${fmt(t.updated)}</td></tr>`).join("")}</table></div>`}
+
+async function home(){
+  if(isStaff()){
+    const s=await api("/stats"),rows=(await api("/tickets")).slice(0,6),max=Math.max(1,...s.by_category.map(x=>x.n)),cnt=k=>(s.by_status.find(x=>x.k===k)||{n:0}).n;
+    shell(`<h1>Overview</h1><div class="grid">
+    <div class="stat"><div class="n">${s.total}</div><div class="l">Total tickets</div></div><div class="stat"><div class="n">${cnt("Open")}</div><div class="l">Open</div></div>
+    <div class="stat"><div class="n">${cnt("In Progress")}</div><div class="l">In progress</div></div><div class="stat"><div class="n" style="color:var(--bad)">${s.urgent}</div><div class="l">Urgent and unresolved</div></div>
+    <div class="stat"><div class="n">${s.unassigned}</div><div class="l">Open, not assigned</div></div><div class="stat"><div class="n">${s.rating??"—"}</div><div class="l">Average rating (of 5)</div></div><div class="stat"><div class="n" style="color:var(--bad)">${s.escalated}</div><div class="l">Escalated (overdue)</div></div></div>
+    <div class="card"><h2>Tickets by category</h2>${s.by_category.length?s.by_category.map(c=>`<div class="bar"><span>${esc(c.k)}</span><i style="width:${c.n/max*60}%"></i><span>${c.n}</span></div>`).join(""):'<div class="empty">No data yet.</div>'}</div>
+    <div class="card"><h2>Latest tickets</h2>${ticketTable(rows)}<p><a href="#/tickets">See all tickets</a></p></div>`)
+  }else{
+    const rows=await api("/tickets"),open=rows.filter(t=>["Open","In Progress"].includes(t.status)).length;
+    shell(`<h1>Hello, ${esc(me.name.split(" ")[0])}</h1><div class="grid"><div class="stat"><div class="n">${rows.length}</div><div class="l">Your tickets</div></div>
+    <div class="stat"><div class="n">${open}</div><div class="l">Being handled</div></div><div class="stat"><div class="n">${rows.length-open}</div><div class="l">Resolved or closed</div></div></div>
+    <div class="card"><h2>Need something fixed or arranged?</h2><p class="mute">Raise a complaint or a service request and follow every update here.</p><a class="btn" style="display:inline-block;text-decoration:none" href="#/new">Raise a ticket</a></div>
+    <div class="card"><h2>Recent tickets</h2>${ticketTable(rows.slice(0,5))}</div>`)}}
+
+let F={};
+async function list(){
+  shell(`<h1>${isStaff()?"All tickets":"My tickets"}</h1><div class="card"><div class="row">
+  <div><label>Search</label><input id="fq" placeholder="Title, text or #id" value="${esc(F.q||"")}"></div>
+  <div><label>Status</label><select id="fs">${opts(meta.statuses,F.status,"All")}</select></div>
+  <div><label>Category</label><select id="fc">${opts(meta.categories,F.category,"All")}</select></div>
+  <div><label>Priority</label><select id="fp">${opts(meta.priorities,F.priority,"All")}</select></div></div>
+  ${me.role==="staff"?`<label class="chk"><input type="checkbox" id="fm" ${F.mine?"checked":""}> Only tickets assigned to me</label>`:""}</div><div class="card" id="tbl"></div>`);
+  const load=async()=>{F={q:$("#fq").value,status:$("#fs").value,category:$("#fc").value,priority:$("#fp").value,mine:$("#fm")?.checked?"1":""};
+    $("#tbl").innerHTML=ticketTable(await api("/tickets?"+new URLSearchParams(F)))};
+  ["fq","fs","fc","fp","fm"].forEach(i=>$("#"+i)?.addEventListener(i==="fq"?"input":"change",load));load()}
+
+function newTicket(){
+  if(me.role!=="student")return location.hash="#/";
+  shell(`<h1>Raise a ticket</h1><div class="card"><form onsubmit="return submitTicket(event)">
+  <div class="row"><div><label>Type</label><select name="kind">${opts(meta.kinds)}</select></div><div><label>Category</label><select name="category">${opts(meta.categories)}</select></div>
+  <div><label>Priority</label><select name="priority">${opts(meta.priorities,"Medium")}</select></div></div>
+  <label>Title</label><input name="title" required maxlength="120" placeholder="e.g. Hostel block B has no hot water"><label>What happened?</label>
+  <textarea name="description" required placeholder="Give the place, time and anything staff need to act on it."></textarea>
+  <label>Photo of the problem (optional, under 1.5 MB)</label><input type="file" name="photo" accept="image/*">
+  <label class="chk"><input type="checkbox" name="anonymous"> Hide my name from staff (use for sensitive complaints)</label>
+  <div class="err" id="err"></div><button class="btn">Submit ticket</button></form></div>`)}
+async function submitTicket(e){e.preventDefault();const f=new FormData(e.target),b=Object.fromEntries(f);b.anonymous=f.has("anonymous");const p=f.get("photo");delete b.photo;
+  try{if(p&&p.size){if(p.size>1.5e6)throw new Error("Photo must be under 1.5 MB");b.image=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(p)})}
+  const r=await api("/tickets","POST",b);location.hash="#/t/"+r.id}catch(x){$("#err").textContent=x.message}return false}
+
+async function detail(id){
+  const t=await api("/tickets/"+id);let star=t.rating||0;
+  shell(`<p><a href="#/tickets">&larr; Back to tickets</a></p><div class="card"><h1>#${t.id} ${esc(t.title)}</h1>
+  <p>${badge("s",t.status)} ${badge("p",t.priority)}${t.esc?' <span class="b p-Urgent">Overdue: escalated</span>':""} <span class="mute">${esc(t.kind)} &middot; ${esc(t.category)}</span></p>
+  <p style="white-space:pre-wrap">${esc(t.description)}</p>${t.image?`<img src="${esc(t.image)}" alt="Attached photo" style="max-width:100%;max-height:360px;border-radius:8px;border:1px solid var(--line)">`:""}
+  <p class="mute">Raised by ${esc(t.owner)}${t.owner_roll?" ("+esc(t.owner_roll)+")":""} on ${fmt(t.created)} &middot; Assigned to ${esc(t.assignee||"nobody yet")}</p></div>
+  ${isStaff()?`<div class="card"><h2>Manage</h2><div class="row"><div><label>Status</label><select id="us">${opts(meta.statuses,t.status)}</select></div>
+  <div><label>Priority</label><select id="up">${opts(meta.priorities,t.priority)}</select></div>
+  <div><label>Assign to</label><select id="ua"><option value="">Nobody</option>${staff.map(s=>`<option value="${s.id}" ${s.name===t.assignee?"selected":""}>${esc(s.name)}</option>`).join("")}</select></div></div>
+  <button class="btn" onclick="saveTicket(${t.id})">Save changes</button><div class="err" id="err2"></div></div>`:""}
+  <div class="card"><h2>Progress timeline</h2>${tl(t)}</div>
+  <div class="card"><h2>Conversation</h2>${t.comments.length?t.comments.map(c=>`<div class="msg ${c.internal?"int":c.role!=="student"?"staff":""}"><b>${esc(c.author)}</b>${c.internal?' <span class="b" style="color:var(--warn)">Staff note</span>':""}
+  <span class="mute"> ${fmt(c.created)}</span><div style="white-space:pre-wrap">${esc(c.body)}</div></div>`).join(""):'<div class="empty">No messages yet.</div>'}
+  <label>Add a message</label><textarea id="cb" style="min-height:70px"></textarea>${isStaff()?'<label class="chk"><input type="checkbox" id="ci"> Staff note (students cannot see this)</label>':""}
+  <button class="btn" onclick="addComment(${t.id})">Send message</button><div class="err" id="err3"></div></div>
+  ${me.role==="student"&&["Resolved","Closed"].includes(t.status)?`<div class="card"><h2>How did we do?</h2>${t.rating?`<p>You rated this ${t.rating}/5. ${esc(t.feedback||"")}</p>`:
+  `<div class="stars" id="st">${[1,2,3,4,5].map(n=>`<button aria-label="${n} stars" onclick="setStar(${n})">&#9733;</button>`).join("")}</div><label>Comment (optional)</label><input id="fb">
+  <button class="btn" onclick="rate(${t.id})">Send rating</button><div class="err" id="err4"></div>`}</div>`:""}`);
+  window._star=0}
+function tl(t){const ev=[{d:t.created,x:"Ticket submitted"},...t.comments.filter(c=>c.body.startsWith("•")).map(c=>({d:c.created,x:c.body.slice(2)+" (by "+c.author+")"}))];if(t.resolved)ev.push({d:t.resolved,x:"Marked "+t.status});
+  return ev.map(e=>`<div class="msg staff"><b>${esc(e.x)}</b><div class="mute">${fmt(e.d)}</div></div>`).join("")}
+function setStar(n){window._star=n;document.querySelectorAll("#st button").forEach((b,i)=>b.classList.toggle("on",i<n))}
+async function rate(id){try{await api(`/tickets/${id}/rating`,"POST",{rating:window._star,feedback:$("#fb").value});detail(id)}catch(x){$("#err4").textContent=x.message}}
+async function saveTicket(id){try{await api(`/tickets/${id}/update`,"POST",{status:$("#us").value,priority:$("#up").value,assigned_to:+$("#ua").value||null});detail(id)}catch(x){$("#err2").textContent=x.message}}
+async function addComment(id){try{await api(`/tickets/${id}/comments`,"POST",{body:$("#cb").value,internal:$("#ci")?.checked});detail(id)}catch(x){$("#err3").textContent=x.message}}
+
+async function users(){
+  const u=await api("/users");
+  shell(`<h1>Users</h1><div class="card"><p class="mute">New sign-ups are students. Promote people to staff so they can be assigned tickets.</p><div class="wrap"><table><tr><th>Name</th><th>Email</th><th>ID</th><th>Role</th></tr>
+  ${u.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${esc(x.roll)}</td><td>${x.id===me.id?esc(x.role)+" (you)":`<select onchange="setRole(${x.id},this.value)">${opts(["student","staff","admin"],x.role)}</select>`}</td></tr>`).join("")}</table></div></div>`)}
+async function setRole(id,role){try{await api(`/users/${id}/role`,"POST",{role});staff=await api("/staff")}catch(x){alert(x.message)}}
+async function notifs(){const d=await api("/notifications");
+  shell(`<h1>Notifications</h1><div class="card">${d.items.length?d.items.map(n=>`<div class="msg ${n.seen?"":"staff"}" style="cursor:pointer" onclick="location.hash='#/t/${n.ticket_id}'"><b>${esc(n.msg)}</b><div class="mute">${fmt(n.created)}</div></div>`).join(""):'<div class="empty">Nothing yet. You will be told here when a ticket changes.</div>'}</div>`);
+  await api("/notifications/read","POST",{});const e=$("#nb");if(e)e.textContent=""}
+function profile(){shell(`<h1>My profile</h1><div class="card"><form onsubmit="return saveProfile(event)"><div class="row"><div><label>Name</label><input name="name" value="${esc(me.name)}" required></div><div><label>Roll / ID</label><input name="roll" value="${esc(me.roll)}"></div></div>
+  <div class="row"><div><label>Department</label><input name="dept" value="${esc(me.dept)}"></div><div><label>Semester</label><input name="semester" value="${esc(me.semester)}"></div><div><label>Phone</label><input name="phone" value="${esc(me.phone)}"></div></div>
+  <p class="mute">Email: ${esc(me.email)}</p><div class="err" id="err"></div><button class="btn">Save profile</button></form></div>`)}
+async function saveProfile(e){e.preventDefault();try{me=(await api("/profile","POST",Object.fromEntries(new FormData(e.target)))).user;$("#err").textContent="Saved."}catch(x){$("#err").textContent=x.message}return false}
+async function analytics(){const s=await api("/stats"),y=new Date().getFullYear(),mx=Math.max(1,...s.monthly.map(m=>m.n)),md=Math.max(1,...s.by_dept.map(m=>m.n));
+  const bars=(a,m,f)=>a.map(x=>`<div class="bar"><span>${esc(x.k)}</span><i style="width:${x.n/m*55}%"></i><span>${f(x)}</span></div>`).join("")||'<div class="empty">No data yet.</div>';
+  shell(`<h1>Analytics and reports</h1><div class="grid"><div class="stat"><div class="n">${s.avg_hours??"—"}</div><div class="l">Average hours to resolve</div></div><div class="stat"><div class="n">${s.total}</div><div class="l">All tickets</div></div>
+  <div class="stat"><div class="n" style="color:var(--bad)">${s.escalated}</div><div class="l">Escalated (Urgent over 1 day, High over 3 days)</div></div></div>
+  <div class="card"><h2>Monthly tickets</h2>${bars(s.monthly,mx,m=>m.n+" ("+m.done+" resolved)")}</div>
+  <div class="card"><h2>Tickets by department</h2>${bars(s.by_dept,md,m=>m.n)}</div>
+  <div class="card"><h2>Download report</h2><div class="row"><div><label>Year</label><input id="ry" value="${y}"></div><div><label>Month (optional, 1 to 12)</label><input id="rm"></div></div>
+  <button class="btn" onclick="location.href='/api/report.csv?year='+$('#ry').value+'&month='+$('#rm').value">Download CSV (opens in Excel)</button> <button class="btn ghost" onclick="print()">Print or save as PDF</button></div>`)}
+function ensureChat(){if($("#chat"))return;const d=document.createElement("div");d.id="chat";
+  d.innerHTML=`<div id="cp" hidden><div class="ch"><b>MSI Help Bot</b><span class="mute" id="cs"></span><button onclick="toggleChat()" aria-label="Close chat">&times;</button></div><div id="cm"></div>
+  ${me.role==="admin"?'<button class="btn ghost" style="margin:0 .6rem .4rem" onclick="refreshBot()">Update from website</button>':""}
+  <form onsubmit="return askBot(event)"><input id="cq" placeholder="Ask about admissions, fees, courses..." autocomplete="off" aria-label="Your question"><button class="btn" style="margin:0">Send</button></form></div>
+  <button id="cb" onclick="toggleChat()">Ask MSI bot</button>`;document.body.appendChild(d);
+  botMsg("bot","Hi! I answer from the college website. Ask me about admissions, courses, fees, placements or contact details.")}
+function toggleChat(){const p=$("#cp");p.hidden=!p.hidden;if(!p.hidden)$("#cq").focus()}
+function botMsg(w,t,src=[]){const m=$("#cm");m.insertAdjacentHTML("beforeend",`<div class="cmsg ${w}">${esc(t).replace(/\n/g,"<br>")}${src.length?'<div class="mute">Sources: '+src.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>`).join(" &middot; ")+"</div>":""}</div>`);m.scrollTop=m.scrollHeight}
+async function askBot(e){e.preventDefault();const i=$("#cq"),q=i.value.trim();if(!q)return false;i.value="";botMsg("me",q);try{const r=await api("/chat","POST",{question:q});botMsg("bot",r.answer,r.sources)}catch(x){botMsg("bot",x.message)}return false}
+async function refreshBot(){try{await api("/chat/refresh","POST",{});botMsg("bot","Reading the website now. This can take a few minutes.");const t=setInterval(async()=>{try{const s=await api("/chat/status");$("#cs").textContent=s.msg;if(!s.running){clearInterval(t);botMsg("bot",s.msg)}}catch(x){clearInterval(t)}},3000)}catch(x){botMsg("bot",x.message)}}
+boot().catch(()=>{$("#app").innerHTML=`<div class="auth card"><h1>Can't reach the server</h1><p>Campus Care needs its Python server running. Open a terminal in the project folder, run <b>python server.py</b>, then open <b>http://localhost:8000</b> in your browser. A file preview or editor preview will not work.</p></div>`});
+</script></body></html>
